@@ -40,19 +40,29 @@ class Trie:
         current_trie_node = self.root
         while True:
             for i in range(len(term)):
-                if i < len(term) - 1:
-                    if term[i] in current_trie_node.children:
+                if not(term[i] in current_trie_node.children):
+                    print("{} not found!!".format(term))
+                    return None
+                else:
+                    if i < len(term) - 1:
                         current_trie_node = current_trie_node.children[term[i]]
                     else:
-                        current_trie_node.children[term[i]] = Trie_node(term[i])
-                        current_trie_node = current_trie_node[term[i]]
-                else:
-                    if term[i] in current_trie_node.children:
                         print("found the term: {}".format(term))
                         return current_trie_node.children[term[i]].posting_list
+
+    def delete_term_doc(self, term: str, doc_id: int):
+        current_trie_node = self.root
+        while True:
+            for i in range(len(term)):
+                if not(term[i] in current_trie_node.children):
+                    print("{} not found!!".format(term))
+                    return None
+                else:
+                    if i < len(term) - 1:
+                        current_trie_node = current_trie_node.children[term[i]]
                     else:
-                        print("{} not found!!".format(term))
-                        return None
+                        print("found the term: {}".format(term))
+                        return current_trie_node.children[term[i]].posting_list
 
 
 class Trie_node:
@@ -72,6 +82,17 @@ def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie):
         # print("     pos:", i, " ", term)
         trie.add_term(term, doc_id, pos=i)
         i += 1
+
+
+def remove_doc(title_and_body: tuple, doc_id: int, trie: Trie):
+    title = title_and_body[0]
+    body = title_and_body[1]
+    stemmed_non_junky_terms = [english_preprocessing.stem(term) for term in
+                               english_preprocessing.simple_tokenize_and_remove_junk(body + "" + title)]
+    all_tf_tokens = english_preprocessing.get_all_english_docs_tf_tokens(alpha=1)
+    all_tokens = [tf_pair[0] for tf_pair in all_tf_tokens]
+    for term in stemmed_non_junky_terms:
+        trie.delete_term_doc(term, doc_id)
 
 
 def build_english_dictionary():
@@ -102,6 +123,8 @@ def show_positions_in_all_docs(term: str, trie_dic: Trie):
             current_doc_data = current_doc_data.next
             print(current_doc_data.__str__())
 
+
+#TODO add the remove file handler
 
 # print("building dict")
 # trie_dictionary = build_english_dictionary()

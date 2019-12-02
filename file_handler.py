@@ -30,12 +30,18 @@ def load_english_file():
 def load_persian_file():
     tree = ET.parse(PERSIAN_FILE_PATH)
     root = tree.getroot()
-    titles_and_bodies = []
-    for page in root:
-        title = page[0].text
-        body = page[3][7].text
-        titles_and_bodies.append((title, body))
-    return titles_and_bodies
+    title = []
+    for x in root:
+        title.append(x.find("{http://www.mediawiki.org/xml/export-0.10/}title").text)
+    text = []
+    for x in root:
+        for y in x.getchildren():
+            if y.tag == "{http://www.mediawiki.org/xml/export-0.10/}revision":
+                text.append(y.find("{http://www.mediawiki.org/xml/export-0.10/}text").text)
+    titles_and_texts = []
+    for i in range(len(title)):
+        titles_and_texts.append((title[i], text[i]))
+    return text
 
 
 def save_object_to_file(obj, filename):

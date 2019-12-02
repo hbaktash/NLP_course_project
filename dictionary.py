@@ -1,8 +1,34 @@
 import english_preprocessing
 import file_handler
 import persian_preproccessing
-import bigram
 from indexing import Posting_list, Doc_data
+
+
+class Trie_node:
+    def __init__(self, char: str):
+        self.posting_list = None
+        self.char: str = char
+        self.term: str = ""
+        self.children = {}
+
+
+class Bigram:
+    def __init__(self):
+        self.bis_dict: dict = {}
+
+    def add_bi_data(self, bi: str, trie_node: Trie_node):
+        if bi in self.bis_dict:
+            if trie_node.term in self.bis_dict[bi]:
+                pass
+            else:
+                self.bis_dict[bi].append(trie_node)
+        else:
+            self.bis_dict[bi] = [trie_node]
+
+    def add_bis_in_term(self, term: str, trie_node: Trie_node):
+        if len(term) > 1:
+            for i in range(len(term) - 1):
+                self.add_bi_data(term[i:i + 2], trie_node)
 
 
 class Trie:
@@ -72,16 +98,23 @@ class Trie:
                             current_trie_node.posting_list = None
                         break
 
+    def get_all_terms(self):
+        def recrusive(term_list, trie_node: Trie_node, str):
+            if trie_node.posting_list is not None:
+                term_list.append(str + trie_node.char)
 
-class Trie_node:
-    def __init__(self, char: str):
-        self.posting_list = None
-        self.char: str = char
-        self.term: str = ""
-        self.children = {}
+            key_list = list(trie_node.children.keys())
+
+            for key in key_list:
+                recrusive(term_list, trie_node.children[key], str + trie_node.char)
+
+        term_list = []
+        recrusive(term_list, self.root, "")
+        term_list.sort()
+        return term_list
 
 
-def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie, bi_gram: bigram.Bigram, is_english:bool = True):
+def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie, bi_gram: Bigram, is_english: bool = True):
     title = title_and_body[0]
     body = title_and_body[1]
     if is_english:
@@ -99,7 +132,7 @@ def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie, bi_gram: bigram
     return
 
 
-def remove_doc(title_and_body: tuple, doc_id: int, trie: Trie, is_english:bool = True):
+def remove_doc(title_and_body: tuple, doc_id: int, trie: Trie, is_english: bool = True):
     title = title_and_body[0]
     body = title_and_body[1]
     if is_english:
@@ -116,7 +149,7 @@ def remove_doc(title_and_body: tuple, doc_id: int, trie: Trie, is_english:bool =
 
 def build_english_dictionary():
     trie_dict = Trie()
-    bigram_data = bigram.Bigram()
+    bigram_data = Bigram()
     titles_and_bodies = file_handler.load_english_file()
     i = 1
     for doc_pair in titles_and_bodies:
@@ -127,7 +160,8 @@ def build_english_dictionary():
 
 
 def show_posting_list(term: str, trie_dic: Trie):
-    posting_list: Posting_list = trie_dic.search_term(term).posting_list
+    trie_node = trie_dic.search_term(term)
+    posting_list: Posting_list = trie_node.posting_list
     if not (posting_list is None):
         print(term + ":\n" + posting_list.__str__())
     else:

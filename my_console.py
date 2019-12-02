@@ -4,8 +4,6 @@ import indexing
 import english_preprocessing
 import persian_preproccessing
 
-PREPROCESSOR = english_preprocessing
-
 
 def main():
     input("press any button!")
@@ -16,8 +14,10 @@ def main():
                          "2- persian"))
         if lang == 1:
             PREPROCESSOR = english_preprocessing
+            all_docs_and_titles = file_handler.load_english_file()
         else:
             PREPROCESSOR = persian_preproccessing
+            all_docs_and_titles = file_handler.load_persian_file()
         command: int = int(input("choose:\n"
                                  "1- pre process my text\n"
                                  "2- show frequent words\n"
@@ -27,11 +27,10 @@ def main():
             print("**pre processed:", PREPROCESSOR.pre_process_text(text))
         elif command == 2:
             rank = int(input("how many?"))
-            tf_token_pairs = PREPROCESSOR.get_all_english_docs_tf_tokens()
+            tf_token_pairs = PREPROCESSOR.get_all_docs_tf_tokens()
             for pair in tf_token_pairs[:rank]:
                 print(pair[0], ": ", pair[1])
         elif command == 3:
-            all_docs_and_titles = file_handler.load_english_file()
             if not dic_is_built:
                 print("building dict...")
                 trie_dict, _ = dictionary.build_english_dictionary()

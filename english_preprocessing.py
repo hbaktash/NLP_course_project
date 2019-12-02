@@ -5,10 +5,11 @@ import file_handler
 ALPHA = 0.008
 
 
-def get_all_english_docs_tf_tokens(alpha=ALPHA):
+def get_all_docs_tf_tokens(alpha=ALPHA):
     titles_and_text = file_handler.load_english_file()
     total_combined_tf_pairs = []
     for doc_pair in titles_and_text:
+        print("X")
         current_tf_pairs = pre_process_text(doc_pair[1]+" "+doc_pair[0], with_tf=True)
         # print(total_combined_tf_pairs)
         # print(current_tf_pairs)

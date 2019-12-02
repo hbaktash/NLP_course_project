@@ -1,5 +1,6 @@
 import english_preprocessing
 import file_handler
+import persian_preproccessing
 import bigram
 from indexing import Posting_list, Doc_data
 
@@ -80,11 +81,15 @@ class Trie_node:
         self.children = {}
 
 
-def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie, bi_gram: bigram.Bigram):
+def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie, bi_gram: bigram.Bigram, is_english:bool = True):
     title = title_and_body[0]
     body = title_and_body[1]
-    stemmed_non_junky_terms = [english_preprocessing.stem(term) for term in
-                               english_preprocessing.simple_tokenize_and_remove_junk(body + "" + title)]
+    if is_english:
+        preprocessor = english_preprocessing
+    else:
+        preprocessor = persian_preproccessing
+    stemmed_non_junky_terms = [preprocessor.stem(term) for term in
+                               preprocessor.simple_tokenize_and_remove_junk(body + "" + title)]
     i = 0
     for term in stemmed_non_junky_terms:
         # print("     pos:", i, " ", term)
@@ -94,12 +99,16 @@ def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie, bi_gram: bigram
     return
 
 
-def remove_doc(title_and_body: tuple, doc_id: int, trie: Trie):
+def remove_doc(title_and_body: tuple, doc_id: int, trie: Trie, is_english:bool = True):
     title = title_and_body[0]
     body = title_and_body[1]
-    stemmed_non_junky_terms = [english_preprocessing.stem(term) for term in
-                               english_preprocessing.simple_tokenize_and_remove_junk(body + "" + title)]
-    all_tf_tokens = english_preprocessing.get_all_english_docs_tf_tokens(alpha=1)
+    if is_english:
+        preprocessor = english_preprocessing
+    else:
+        preprocessor = persian_preproccessing
+    stemmed_non_junky_terms = [preprocessor.stem(term) for term in
+                               preprocessor.simple_tokenize_and_remove_junk(body + "" + title)]
+    all_tf_tokens = preprocessor.get_all_english_docs_tf_tokens(alpha=1)
     all_tokens = [tf_pair[0] for tf_pair in all_tf_tokens]
     for term in stemmed_non_junky_terms:
         trie.delete_term_doc(term, doc_id)

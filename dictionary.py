@@ -30,11 +30,26 @@ class Bigram:
             for i in range(len(term) - 1):
                 self.add_bi_data(term[i:i + 2], trie_node)
 
-    def get_words_with_bi(self, bi: str):
+    def get_tries_with_bi(self, bi: str):
         if bi in self.bis_dict:
             return self.bis_dict[bi]
         else:
             return []
+
+    def get_tries_for_term(self, term: str):
+        ans = []
+        if len(term) > 1:
+            for i in range(len(term) - 1):
+                ans.append(self.get_tries_with_bi(term[i:i+2]))
+        return ans
+
+    @staticmethod
+    def get_bis_of_term(term):
+        bis = []
+        if len(term) > 1:
+            for i in range(len(term) - 1):
+                bis.append(term[i:i + 2])
+        return bis
 
 
 class Trie:
@@ -83,7 +98,7 @@ class Trie:
                     if i < len(term) - 1:
                         current_trie_node = current_trie_node.children[term[i]]
                     else:
-                        print("found the term: {}".format(term))
+                        # print("found the term: {}".format(term))
                         return current_trie_node.children[term[i]]
 
     def delete_term_doc(self, term: str, doc_id: int):
@@ -119,6 +134,19 @@ class Trie:
         term_list.sort()
         return term_list
 
+    def set_termNum_docNum(self):
+        term_list = self.get_all_terms()
+        doc_id_set = set()
+        for term in term_list:
+            posting_list = self.search_term(term).posting_list
+            doc_data = posting_list.first_doc_data
+            while doc_data:
+                doc_id_set.add(doc_data.doc_id)
+                doc_data = doc_data.next
+
+        self.doc_num = len(doc_id_set)
+        self.term_num = len(term_list)
+
 
 def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie, bi_gram: Bigram, is_english: bool = True):
     title = title_and_body[0]
@@ -147,16 +175,19 @@ def remove_doc(title_and_body: tuple, doc_id: int, trie: Trie, is_english: bool 
         preprocessor = persian_preproccessing
     stemmed_non_junky_terms = [preprocessor.stem(term) for term in
                                preprocessor.simple_tokenize_and_remove_junk(body + "" + title)]
-    all_tf_tokens = preprocessor.get_all_english_docs_tf_tokens(alpha=1)
+    all_tf_tokens = preprocessor.get_all_docs_tf_tokens(alpha=1)
     all_tokens = [tf_pair[0] for tf_pair in all_tf_tokens]
     for term in stemmed_non_junky_terms:
         trie.delete_term_doc(term, doc_id)
 
 
-def build_english_dictionary():
+def build_dictionary(english_or_persian: int = 1):
     trie_dict = Trie()
     bigram_data = Bigram()
-    titles_and_bodies = file_handler.load_english_file()
+    if english_or_persian == 1:
+        titles_and_bodies = file_handler.load_english_file()
+    else:
+        titles_and_bodies = file_handler.load_persian_file()
     i = 1
     for doc_pair in titles_and_bodies:
         # print(" doc:", i)

@@ -3,9 +3,12 @@ import dictionary
 import indexing
 import english_preprocessing
 import persian_preproccessing
-
+import Part4
+import Part3
+import part5
 
 def main():
+    global term_to_num, idf_query, doc_space, bigram_ds, trie_dict
     input("press any button!")
     dic_is_built = False
     while True:
@@ -33,11 +36,17 @@ def main():
         elif command == 3:
             if not dic_is_built:
                 print("building dict...")
-                trie_dict, _ = dictionary.build_english_dictionary()
+                trie_dict, bigram_ds = dictionary.build_dictionary(lang)
+                doc_space, idf_query, term_to_num = part5.vector_space_preprocess(trie_dict)
                 dic_is_built = True
             command2 = int(input("1- show posting for my word\n"
                                  "2- show positions of word in all docs\n"
-                                 "3- remove the doc"))
+                                 "3- remove the doc\n"
+                                 "4- correct query\n"
+                                 "5- test compression \n"
+                                 "6- test compression recoverability\n"
+                                 "7- search query\n"
+                                 "8- search query (proximity)"))
             if command2 == 1:
                 word = input("enter the word:\n")
                 dictionary.show_posting_list(word, trie_dict)
@@ -46,7 +55,33 @@ def main():
                 dictionary.show_positions_in_all_docs(word, trie_dict)
             elif command2 == 3:
                 doc_id = int(input("enter doc id:"))
-                dictionary.remove_doc(all_docs_and_titles, doc_id, dictionary)
+                dictionary.remove_doc(all_docs_and_titles, doc_id, trie_dict)
+            elif command2 == 4:
+                query = input("enter [bad] query:")
+                corrected = ""
+                for term in PREPROCESSOR.simple_tokenize_and_remove_junk(query):
+                    corrected = corrected + " " + Part4.word_correction(term, trie_dict, bigram_ds)
+                print("corrected: ", corrected)
+            elif command2 == 5:
+                Part3.part3_1and2(trie_dict)
+            elif command2 == 6:
+                Part3.part3_3(trie_dict)
+            elif command2 == 7:
+                query = input("inout your query: ")
+                corrected = ""
+                for term in PREPROCESSOR.simple_tokenize_and_remove_junk(query):
+                    corrected = corrected + " " + Part4.word_correction(term, trie_dict, bigram_ds)
+                query_tokens = PREPROCESSOR.simple_tokenize_and_remove_junk(corrected)
+                relev_docs = part5.get_related_docId_list(query_tokens, idf_query, term_to_num, doc_space)
+                print("results: ", relev_docs)
+            elif command2 == 8:
+                query = input("inout your query: ")
+                corrected = ""
+                for term in PREPROCESSOR.simple_tokenize_and_remove_junk(query):
+                    corrected = corrected + " " + Part4.word_correction(term, trie_dict, bigram_ds)
+                query_tokens = PREPROCESSOR.simple_tokenize_and_remove_junk(corrected)
+                relev_docs = part5.get_related_docId_list_proximity_version(query_tokens, idf_query, term_to_num, doc_space, trie_dict)
+                print("results: ", relev_docs)
 
 
 main()

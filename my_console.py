@@ -24,7 +24,7 @@ def main():
             all_docs_and_titles = file_handler.load_english_file()
             if not dic_is_built:
                 print("building dict...")
-                trie_dict = dictionary.build_english_dictionary()
+                trie_dict,_ = dictionary.build_english_dictionary()
                 dic_is_built = True
             command2 = int(input("1- show posting for my word\n"
                                  "2- show positions of word in all docs\n"

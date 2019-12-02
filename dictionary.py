@@ -30,6 +30,12 @@ class Bigram:
             for i in range(len(term) - 1):
                 self.add_bi_data(term[i:i + 2], trie_node)
 
+    def get_words_with_bi(self, bi: str):
+        if bi in self.bis_dict:
+            return self.bis_dict[bi]
+        else:
+            return []
+
 
 class Trie:
     def __init__(self):
@@ -173,7 +179,7 @@ def show_positions_in_all_docs(term: str, trie_dic: Trie):
     if posting_list is None:
         print("{} not found!".format(term))
     else:
-        if posting_list.first_doc_data in None:
+        if posting_list.first_doc_data is None:
             print("not found!")
         else:
             current_doc_data: Doc_data = posting_list.first_doc_data
@@ -183,9 +189,9 @@ def show_positions_in_all_docs(term: str, trie_dic: Trie):
                 print(current_doc_data.__str__())
 
 # print("building dict")
-# trie_dictionary = build_english_dictionary()
+# trie_dictionary, bi_datagram = build_english_dictionary()
 # show_posting_list("saturday", trie_dictionary)
 # show_positions_in_all_docs("sharon", trie_dictionary)
-#
+# print("SSSSS\n", [x.term for x in bi_datagram.get_words_with_bi("id")])
 # print("saving dict to file")
 # file_handler.save_object_to_file(trie_dictionary, "my_dic.pkl")

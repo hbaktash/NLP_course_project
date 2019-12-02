@@ -8,9 +8,10 @@ def get_all_docs_tf_tokens(alpha=ALPHA):
     titles_and_text = file_handler.load_persian_file()
     total_combined_tf_pairs = []
     for doc_pair in titles_and_text:
+        print("X")
+        print(doc_pair)
         current_tf_pairs = pre_process_text(doc_pair[1]+" "+doc_pair[0], with_tf=True)
         # print(total_combined_tf_pairs)
-        # print(current_tf_pairs)
         total_combined_tf_pairs = combine_tf_tokens(total_combined_tf_pairs,
                                                     current_tf_pairs)
     total_combined_tf_pairs.sort(key=lambda x: x[1], reverse=True)

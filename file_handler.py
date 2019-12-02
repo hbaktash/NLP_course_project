@@ -41,7 +41,7 @@ def load_persian_file():
     titles_and_texts = []
     for i in range(len(title)):
         titles_and_texts.append((title[i], text[i]))
-    return text
+    return titles_and_texts
 
 
 def save_object_to_file(obj, filename):

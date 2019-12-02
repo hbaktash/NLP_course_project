@@ -3,6 +3,7 @@ import os
 import xlrd
 import csv
 import pickle
+import xml.etree.ElementTree as ET
 
 PROJECT_PARENT_PATH = "C:\\Users\\hosse\\Desktop\\MIR\\MIRRepo"
 ENGLISH_FILE_PATH = os.path.join(PROJECT_PARENT_PATH, "English.csv")
@@ -27,7 +28,7 @@ def load_english_file():
 
 
 def load_persian_file():
-    pass
+    tree =
 
 
 def save_object_to_file(obj, filename):

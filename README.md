@@ -1,1 +1,1 @@
-# MIR_class_project
+# Modern Information Retrieval Course

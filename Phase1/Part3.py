@@ -1,5 +1,5 @@
 import bitstring
-import dictionary
+from Phase1 import dictionary
 import pickle
 from pympler import asizeof
 

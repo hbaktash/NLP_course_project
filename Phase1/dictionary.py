@@ -1,7 +1,5 @@
-import english_preprocessing
-import file_handler
-import persian_preproccessing
-from indexing import Posting_list, Doc_data
+from Phase1 import persian_preproccessing, english_preprocessing, file_handler
+from Phase1.indexing import Posting_list, Doc_data
 
 
 class Trie_node:

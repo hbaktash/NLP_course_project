@@ -1,5 +1,5 @@
 import numpy as np
-import dictionary
+from Phase1 import dictionary
 
 KK = 10  ## number of top scored words in jacard selected for edit distance
 

@@ -1,7 +1,3 @@
-import file_handler
-import english_preprocessing
-
-
 class Posting_list:
     def __init__(self, term: str):
         self.term = term

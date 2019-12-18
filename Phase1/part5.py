@@ -1,4 +1,4 @@
-import dictionary
+from Phase1 import dictionary
 import numpy as np
 
 window_size = 1000

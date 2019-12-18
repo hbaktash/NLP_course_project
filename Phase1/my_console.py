@@ -1,11 +1,5 @@
-import file_handler
-import dictionary
-import indexing
-import english_preprocessing
-import persian_preproccessing
-import Part4
-import Part3
-import part5
+from Phase1 import dictionary, Part3, part5, persian_preproccessing, english_preprocessing, file_handler, Part4
+
 
 def main():
     global term_to_num, idf_query, doc_space, bigram_ds, trie_dict

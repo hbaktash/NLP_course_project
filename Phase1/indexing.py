@@ -14,6 +14,17 @@ class Posting_list:
                 current_doc_data = current_doc_data.next
         return ans
 
+    def to_list(self):
+        if self.first_doc_data is None:
+            return []
+        else:
+            current_doc_data = self.first_doc_data
+            ans = []
+            while not(current_doc_data is None):
+                ans.append((current_doc_data.doc_id, current_doc_data.tf))
+                current_doc_data = current_doc_data.next
+        return ans
+
     def add_new_doc_data(self, doc_id, pos):
         if self.first_doc_data is None:
             self.first_doc_data = Doc_data(doc_id, pos)
@@ -69,9 +80,11 @@ class Doc_data:
     def __init__(self, doc_id: int, position: int):
         self.doc_id: int = doc_id
         self.first_pos_data: Pos_data = Pos_data(position)
+        self.tf = 1
         self.next = None
 
     def add_pos(self, pos: int):
+        self.tf += 1
         new_pos_data = Pos_data(pos)
         if self.first_pos_data is None:
             self.first_pos_data = new_pos_data

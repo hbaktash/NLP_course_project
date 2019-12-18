@@ -38,7 +38,7 @@ class Bigram:
         ans = []
         if len(term) > 1:
             for i in range(len(term) - 1):
-                ans.append(self.get_tries_with_bi(term[i:i+2]))
+                ans.append(self.get_tries_with_bi(term[i:i + 2]))
         return ans
 
     @staticmethod
@@ -145,6 +145,21 @@ class Trie:
         self.doc_num = len(doc_id_set)
         self.term_num = len(term_list)
 
+    def to_list(self):
+        def recrusive(trie_list, trie_node: Trie_node, str):
+            if trie_node.posting_list is not None:
+                trie_list.append(trie_node)
+
+            key_list = list(trie_node.children.keys())
+
+            for key in key_list:
+                recrusive(trie_list, trie_node.children[key], str + trie_node.char)
+
+        trie_list = []
+        recrusive(trie_list, self.root, "")
+        trie_list.sort()
+        return trie_list
+
 
 def add_doc_data(title_and_body: tuple, doc_id: int, trie: Trie, bi_gram: Bigram, is_english: bool = True):
     title = title_and_body[0]
@@ -179,11 +194,11 @@ def remove_doc(title_and_body: tuple, doc_id: int, trie: Trie, is_english: bool 
         trie.delete_term_doc(term, doc_id)
 
 
-def build_dictionary(english_or_persian: int = 1):
+def build_dictionary(english_or_persian: int = 1, filename: str = "English.csv"):
     trie_dict = Trie()
     bigram_data = Bigram()
     if english_or_persian == 1:
-        titles_and_bodies = file_handler.load_english_file()
+        titles_and_bodies = file_handler.load_english_file(filename)
     else:
         titles_and_bodies = file_handler.load_persian_file()
     i = 1

@@ -6,13 +6,13 @@ import pickle
 import xml.etree.ElementTree as ET
 
 PROJECT_PARENT_PATH = "C:\\Users\\hosse\\Desktop\\MIR\\MIRRepo"
-ENGLISH_FILE_PATH = os.path.join(PROJECT_PARENT_PATH, "English.csv")
 PERSIAN_FILE_PATH = os.path.join(PROJECT_PARENT_PATH, "Persian.xml")
 
 
-def load_english_file():
+def load_english_file(filename: str = "English.csv"):
     titles_and_text = []
-    with open(ENGLISH_FILE_PATH) as csv_file:
+    path = os.path.join(PROJECT_PARENT_PATH, filename)
+    with open(path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_cnt = 0
         for row in csv_reader:

@@ -49,6 +49,25 @@ class Posting_list:
                 else:
                     current_doc_data = current_doc_data.next
 
+    def remove_doc_data(self, doc_id:int):
+        current_doc_data = self.first_doc_data
+        prev_doc_data = None
+        first = True
+        found = False
+        while True:
+            if current_doc_data.doc_id == doc_id:
+                found = True
+                if first:
+                    self.first_doc_data = current_doc_data.next
+                    break
+                else:
+                    prev_doc_data.next = current_doc_data.next
+                    break
+            first = False
+            prev_doc_data = current_doc_data
+        if not found:
+            print("term {} indexing did not contain doc {}".format(self.term, doc_id))
+
 
 class Doc_data:
     def __init__(self, doc_id: int, position: int):

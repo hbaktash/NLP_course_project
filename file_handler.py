@@ -3,6 +3,7 @@ import os
 import xlrd
 import csv
 import pickle
+import xml.etree.ElementTree as ET
 
 PROJECT_PARENT_PATH = "C:\\Users\\hosse\\Desktop\\MIR\\MIRRepo"
 ENGLISH_FILE_PATH = os.path.join(PROJECT_PARENT_PATH, "English.csv")
@@ -27,7 +28,20 @@ def load_english_file():
 
 
 def load_persian_file():
-    pass
+    tree = ET.parse(PERSIAN_FILE_PATH)
+    root = tree.getroot()
+    title = []
+    for x in root:
+        title.append(x.find("{http://www.mediawiki.org/xml/export-0.10/}title").text)
+    text = []
+    for x in root:
+        for y in x.getchildren():
+            if y.tag == "{http://www.mediawiki.org/xml/export-0.10/}revision":
+                text.append(y.find("{http://www.mediawiki.org/xml/export-0.10/}text").text)
+    titles_and_texts = []
+    for i in range(len(title)):
+        titles_and_texts.append((title[i], text[i]))
+    return titles_and_texts
 
 
 def save_object_to_file(obj, filename):

@@ -1,18 +1,17 @@
-import hazm
-import nltk
+from hazm import *
 import file_handler
 
 ALPHA = 0.008
 
 
 def get_all_docs_tf_tokens(alpha=ALPHA):
-    titles_and_text = file_handler.load_english_file()
+    titles_and_text = file_handler.load_persian_file()
     total_combined_tf_pairs = []
     for doc_pair in titles_and_text:
-        # print("X")
+        print("X")
+        print(doc_pair)
         current_tf_pairs = pre_process_text(doc_pair[1]+" "+doc_pair[0], with_tf=True)
         # print(total_combined_tf_pairs)
-        # print(current_tf_pairs)
         total_combined_tf_pairs = combine_tf_tokens(total_combined_tf_pairs,
                                                     current_tf_pairs)
     total_combined_tf_pairs.sort(key=lambda x: x[1], reverse=True)
@@ -55,13 +54,22 @@ def pre_process_text(text: str, with_tf=False):
 
 
 def normalize(text: str):
-    return text.lower()
+    normalizer = Normalizer()
+    return normalizer.normalize(text)
 
 
 def simple_tokenize_and_remove_junk(text: str):
-    tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+')
-    tokens = tokenizer.tokenize(text)
-    return tokens
+    junky_tokens = word_tokenize(text)
+    good_tokens = []
+    for junky_token in junky_tokens:
+        remove = False
+        for char in junky_token:
+            if (1568 > ord(char)) or (ord(char) > 1745):
+                remove = True
+                break
+        if not remove:
+            good_tokens.append(junky_token)
+    return good_tokens
 
 
 def tokens_with_tf(tokens: list):
@@ -87,7 +95,10 @@ def remove_stopwords(simple_tokens: list, alpha: float):
 
 
 def stem(word: str):
-    return nltk.stem.PorterStemmer().stem(word)
+    lemmatizer = Lemmatizer()
+    stemmed = lemmatizer.stemmer.stem(word)
+    return stemmed
 
 
-# print(get_all_english_docs_tf_tokens())
+# print(get_all_docs_tf_tokens())
+

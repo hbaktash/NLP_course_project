@@ -17,12 +17,12 @@ def prepare_data_as_list(train_not_test=True):
 
 def term_pl_list_to_matrix(term_pl_list: list, docs_count: int = 9000):
     term_arr = [a[0] for a in term_pl_list]
-    doc_id_tfs_list = [a[1].posting_list.to_list() for a in term_pl_list]
+    doc_id_tfs_list = [a[1].to_list() for a in term_pl_list]
     doc_term_matrix = np.zeros((docs_count, len(term_arr)))
     for i in range(len(doc_id_tfs_list)):
         doc_id_tfs = doc_id_tfs_list[i]
         for doc_id_tf in doc_id_tfs:
             doc_id = doc_id_tf[0]
             tf = doc_id_tf[1]
-            doc_term_matrix[doc_id][i] = tf
+            doc_term_matrix[doc_id-1][i] = tf
     return doc_term_matrix

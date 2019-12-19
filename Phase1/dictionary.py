@@ -157,7 +157,7 @@ class Trie:
 
         trie_list = []
         recrusive(trie_list, self.root, "")
-        trie_list.sort()
+#       trie_list.sort()
         return trie_list
 
 

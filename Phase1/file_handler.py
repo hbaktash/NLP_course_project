@@ -22,7 +22,10 @@ def load_english_file(filename: str = "English.csv"):
                 pass
             else:
                 # print(row[0], row[1])
-                titles_and_text.append((row[0], row[1]))
+                if filename == "English.csv":
+                    titles_and_text.append((row[0], row[1]))
+                else:
+                    titles_and_text.append((row[1], row[2]))
             line_cnt += 1
     return titles_and_text
 

@@ -12,6 +12,7 @@ def prepare_data_as_list(train_not_test=True):
     trie_list = trie_dict.to_list()
     trie_list.sort(key=lambda x: x.term)
     term_and_posting_list = [(a.term, a.posting_list) for a in trie_list]
+    return term_and_posting_list
 
 
 def term_pl_list_to_matrix(term_pl_list: list, docs_count: int = 9000):

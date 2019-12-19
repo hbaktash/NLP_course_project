@@ -5,7 +5,7 @@ import csv
 import pickle
 import xml.etree.ElementTree as ET
 
-PROJECT_PARENT_PATH = "C:\\Users\\hosse\\Desktop\\MIR\\MIRRepo"
+PROJECT_PARENT_PATH = ""
 PERSIAN_FILE_PATH = os.path.join(PROJECT_PARENT_PATH, "Persian.xml")
 
 

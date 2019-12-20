@@ -7,7 +7,6 @@ LANGUAGE = 1  # English
 
 def generate_term_map(small_list: list, big_list: list):
     ans = []
-    i = 0
     for s in small_list:
         if s in big_list:
             ans.append(big_list.index(s))
@@ -19,14 +18,14 @@ def term_pl_list_to_matrix_for_test_given_train(term_pl_list: list, train_terms:
     term_arr = [a[0] for a in term_pl_list]
     mapping = generate_term_map(term_arr, train_terms)
     doc_id_tfs_list = [a[1].to_list() for a in term_pl_list]
-    doc_term_matrix = np.zeros((len(train_terms), len(term_arr)))
+    doc_term_matrix = np.zeros((len(train_terms), len(train_terms)))
     for i in range(len(doc_id_tfs_list)):
         doc_id_tfs = doc_id_tfs_list[i]
         for doc_id_tf in doc_id_tfs:
             doc_id = doc_id_tf[0]
             tf = doc_id_tf[1]
             if mapping[i] != -1:
-                doc_term_matrix[doc_id - 1][mapping[i]] = tf
+                doc_term_matrix[doc_id - 1,mapping[i]] = tf
             else:
                 pass
     return doc_term_matrix

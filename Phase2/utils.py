@@ -1,13 +1,6 @@
 
 import numpy as np
-import sklearn.svm.SVC
 
-a = np.array([5,3,2,2,5,6])
-print(np.bincount(a))
-
-print()
-
-exit()
 
 def NaiveBayes_train(occurence_matrix, label_vector, normalization_factor):
 
@@ -49,6 +42,7 @@ def get_tf_idf(occurence_matrix):
     exist_matrix = np.copy(occurence_matrix)
     exist_matrix[exist_matrix>1]=1
     idf = exist_matrix.sum(axis=0)
+    idf +=1
     doc_num = occurence_matrix.shape[0]
     idf = np.log(doc_num/idf).reshape(1,-1)
     tf_idf = occurence_matrix*idf

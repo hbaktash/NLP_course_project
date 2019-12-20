@@ -14,11 +14,11 @@ def generate_term_map(small_list: list, big_list: list):
             ans.append(-1)
     return ans
 
-def term_pl_list_to_matrix_for_test_given_train(term_pl_list: list, train_terms: list):
+def term_pl_list_to_matrix_for_test_given_train(term_pl_list: list, train_terms: list,docs_count=1000):
     term_arr = [a[0] for a in term_pl_list]
     mapping = generate_term_map(term_arr, train_terms)
     doc_id_tfs_list = [a[1].to_list() for a in term_pl_list]
-    doc_term_matrix = np.zeros((len(train_terms), len(train_terms)))
+    doc_term_matrix = np.zeros((docs_count, len(train_terms)))
     for i in range(len(doc_id_tfs_list)):
         doc_id_tfs = doc_id_tfs_list[i]
         for doc_id_tf in doc_id_tfs:
@@ -73,5 +73,5 @@ def save_data_np():
     np.save("x_train.npy",train_x)
 
     term_and_posting_list = prepare_data_as_list(train_not_test=False)
-    test_x = term_pl_list_to_matrix_for_test_given_train(term_and_posting_list,term_arr)
+    test_x = term_pl_list_to_matrix_for_test_given_train(term_and_posting_list,term_arr,1000)
     np.save("x_test.npy", test_x)

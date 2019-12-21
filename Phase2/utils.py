@@ -9,7 +9,7 @@ def NaiveBayes_train(occurence_matrix, label_vector, normalization_factor):
     docs_num = occurence_matrix.shape[0]
 
     prior = np.zeros(class_num+1)
-    likelihood = np.zeros(class_num+1,word_num)
+    likelihood = np.zeros((class_num+1,word_num))
 
     for class_int in range(1,class_num+1):
 
@@ -21,7 +21,7 @@ def NaiveBayes_train(occurence_matrix, label_vector, normalization_factor):
     for class_int in range(1,class_num+1):
 
         class_arg = np.argwhere(label_vector == class_int).reshape(-1)
-        terms_of_a_class = occurence_matrix[class_arg,:].sum(axis=0).reshape(1,-1) + normalization_factor *  np.ones(1,word_num)
+        terms_of_a_class = occurence_matrix[class_arg,:].sum(axis=0).reshape(1,-1) + normalization_factor *  np.ones((1,word_num))
         likelihood[class_int,:] =  terms_of_a_class /terms_of_a_class.sum()
 
 
@@ -33,7 +33,7 @@ def NaiveBayes(likelihood,prior,test_vector):
     prob = np.prod(prob,axis=1)
 
     prob = (prob.reshape(-1,1) * prior.reshape(-1,1)).reshape(-1)
-    return prob
+    return np.argmax(prob)
 
 
 #def KNN_train(tf_idf,label_matrix):
@@ -49,16 +49,12 @@ def get_tf_idf(occurence_matrix):
     return tf_idf
 
 def KNN(K,tf_idf,label_vector,test_vector):
-    scores = tf_idf * test_vector.reshape(1,-1)
-    scores = scores.reshape(-1)
+    scores = tf_idf * (test_vector.reshape(1,-1))
+    scores = scores.sum(axis=1).reshape(-1)
     neighbors_arg = scores.argsort()[::-1][0:K]
     neighbors_label = label_vector[neighbors_arg]
     neighbors_bin = np.bincount(neighbors_label)
     predict_label = neighbors_bin.argmax().reshape(-1)[0]
     return predict_label
 
-def SVM(tf_idf,label_vector,test_vector):
-    clf =  sklearn.svm.svc()
-    clf.fit(tf_idf,label_vector)
-    prediction =  clf.predict(test_vector)
 

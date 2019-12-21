@@ -59,6 +59,8 @@ def get_labels_np():
     "phase2_train.csv"
     train_y = pd.read_csv("phase2_train.csv").to_numpy()[:, 0]
     test_y =  pd.read_csv("phase2_test.csv").to_numpy()[:, 0]
+    train_y = train_y.astype(int)
+    test_y = test_y.astype(int)
     return train_y,test_y
 
 def get_data_np():

@@ -66,7 +66,8 @@ def get_labels_np():
 def get_data_np():
     x_train =  np.load("x_train.npy")
     x_test  = np.load("x_test.npy")
-    return x_train,x_test
+    term_list = np.load("term_list.npy")
+    return x_train,x_test,term_list
 
 def save_data_np():
 
@@ -77,3 +78,5 @@ def save_data_np():
     term_and_posting_list = prepare_data_as_list(train_not_test=False)
     test_x = term_pl_list_to_matrix_for_test_given_train(term_and_posting_list,term_arr,1000)
     np.save("x_test.npy", test_x)
+
+    np.save("term_list.npy",term_arr)

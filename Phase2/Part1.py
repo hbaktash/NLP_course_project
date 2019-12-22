@@ -1,3 +1,4 @@
+from Phase1 import english_preprocessing,part5,Part4
 from Phase2.prep_tools import *
 from Phase2.utils import *
 from sklearn.svm import SVC
@@ -11,20 +12,19 @@ np.set_printoptions(threshold=np.inf)
 #test_x = get_tf_idf(test_x)
 
 prepare_np_flg =  input("Welcome To Phase 2 of MIR project. For the first run, it is required to load the dataset as a numpy array and save it. Do you wish to run this preprocessing? Y/N")
-print(prepare_np_flg)
 if prepare_np_flg=='Y':
     save_data_np()
 
 while(True):
 
     train_Y, test_y = get_labels_np()
-    train_X, test_x = get_data_np()
+    train_X, test_x, big_term_arr = get_data_np()
 
-    prm = np.range(train_Y.shape[0])
+    prm = np.arange(train_Y.shape[0])
     np.random.shuffle(prm)
 
-    train_indx = prm[0:0.9*prm.shape[0]]
-    val_indx   = prm[0.9 * prm.shape[0]:]
+    train_indx = prm[0:int(0.9*prm.shape[0])]
+    val_indx   = prm[int(0.9 * prm.shape[0]):]
 
     train_x = train_X[train_indx,:]
     train_y = train_Y[train_indx]
@@ -45,7 +45,7 @@ while(True):
             for i in range(val_y.shape[0]):
                 predict[i] = NaiveBayes(likelihood,prior,val_x[i,:])
                 print(i)
-            print("Accuracy on Validation = ",1-np.count_nonzero(predict-val_y)/val_y.shape[0])
+            print("Accuracy on Validation = ",get_accuracy(predict,val_y))
 
         if model_int==2:
 
@@ -54,7 +54,7 @@ while(True):
             for i in range(val_y.shape[0]):
                 predict[i]  = KNN(K,train_x,train_y,val_x[i,:])
                 print(i)
-            print("Accuracy on Validation = ",1-np.count_nonzero(predict-val_y)/val_y.shape[0])
+            print("Accuracy on Validation = ",get_accuracy(predict,val_y))
 
         if model_int==3:
 
@@ -62,34 +62,111 @@ while(True):
             clf = SVC(gamma='auto',C=C)
             clf.fit(train_x, train_y)
             prediction = clf.predict(val_x)
-            print("Accuracy on Validation = ",1-np.count_nonzero(prediction-val_y)/val_y.shape[0])
+            print("Accuracy on Validation = ",get_accuracy(predict,val_y))
 
         if model_int==4:
 
             clf = RandomForestClassifier(n_estimators=100)
             clf.fit(train_x, train_y)
             prediction = clf.predict(val_x)
-            print("Accuracy on Validation = ",1-np.count_nonzero(prediction-val_y)/val_y.shape[0])
+            print("Accuracy on Validation = ",get_accuracy(predict,val_y))
 
     if section_int==2:
 
-        prp_flg = input("If it is the first time, please say yes to preprocess Y/N")
-        if prp_flg == "Y":
-            #TODO posting list and preprocess should be done
-            #TODO Classifier should be trained on train data and classify the english dataset
 
-        if prp_flg == "N":
-            query = input("inout your query: ")
-            corrected = ""
-            for term in PREPROCESSOR.simple_tokenize_and_remove_junk(query):
-                corrected = corrected + " " + Part4.word_correction(term, trie_dict, bigram_ds)
-            query_tokens = PREPROCESSOR.simple_tokenize_and_remove_junk(corrected)
-            relev_docs = part5.get_related_docId_list_proximity_version(query_tokens, idf_query, term_to_num, doc_space,
-                                                                        trie_dict)
-            print("results: ", relev_docs)
+        try:
+            predict =  np.load("prediction_for_phas1Data.npy")
+
+        except:
+            print(" As it is the first query, please be patient while we train a model to classify the Phase1 Dataset")
+            PREPROCESSOR = english_preprocessing
+            all_docs_and_titles = file_handler.load_english_file()
+
+            trie_dict, bigram_ds = dictionary.build_dictionary(english_or_persian=1)
+            doc_space, idf_query, term_to_num = part5.vector_space_preprocess(trie_dict)
+            occurence_matrix = get_occurence_matrix(trie_dict)
+
+            small_term_list = [None] * len(list(term_to_num.keys()))
+            for term in list(term_to_num.keys()):
+                small_term_list[term_to_num[term]] = term
+
+            big_term_list = big_term_arr.tolist()
+            big_indx = []
+            small_indx = []
+            term_cnt = 0
+            for term in small_term_list:
+                # indx.append(big_term_list.index(term))
+                if term in big_term_list:
+                    big_indx.append(big_term_list.index(term))
+                    small_indx.append(term_cnt)
+                term_cnt += 1
+
+            ###############
+            # big_occurence_matrix = np.zeros((occurence_matrix.shape[0],len(big_term_arr)))
+
+            # big_occurence_matrix[:,indx] = occurence_matrix
+            ###############
+            # reduced_train_X = train_X[:,big_indx]
+            # reduced_train_X = train_X
+
+            consistant_occurence_matrix = np.zeros((occurence_matrix.shape[0], train_X.shape[1]))
+            consistant_occurence_matrix[:, big_indx] = occurence_matrix[:, small_indx]
+
+            likelihood, prior = NaiveBayes_train(train_X, train_Y, 1)
+            predict = np.zeros(occurence_matrix.shape[0])
+
+            for i in range(predict.shape[0]):
+                predict[i] = NaiveBayes(likelihood, prior, consistant_occurence_matrix[i, :])
+            np.save("prediction_for_phas1Data.npy", predict)
+
+
+        predict = np.load("prediction_for_phas1Data.npy")
+        category_query = int(input("input the category of your query: 1,2,3,4"))
+        query = input("inout your query: ")
+        corrected = ""
+        for term in PREPROCESSOR.simple_tokenize_and_remove_junk(query):
+            corrected = corrected + " " + Part4.word_correction(term, trie_dict, bigram_ds)
+        query_tokens = PREPROCESSOR.simple_tokenize_and_remove_junk(corrected)
+        relev_docs = get_related_docId_list_classified(query_tokens, idf_query, term_to_num, doc_space,predict,category_query)
+        print("results: ", relev_docs)
 
     if section_int==3:
-        pass
+
+        model_int = int(input("Please indicate the model number. 1-Naive Bayes, 2-KNN, 3-SVM, 4-Random Forest"))
+
+        if model_int == 1:
+
+            likelihood, prior = NaiveBayes_train(train_X, train_Y, 1)
+            predict = np.zeros_like(test_y)
+            for i in range(predict.shape[0]):
+                predict[i] = NaiveBayes(likelihood, prior, test_x[i, :])
+                print(i)
+
+            print_criterias(predict, test_y)
+
+        if model_int == 2:
+            tf_idf = get_tf_idf(train_X)
+            K = int(input("Type the value of K: "))
+            test_y = test_y
+            predict = np.zeros_like(test_y)
+            for i in range(predict.shape[0]):
+                predict[i] = KNN(K, tf_idf, train_Y, test_x[i, :])
+                print(i)
+
+            print_criterias(predict, test_y)
+
+        if model_int == 3:
+            C = int(input("Type the value of C: "))
+            clf = SVC(gamma='auto', C=C)
+            clf.fit(train_X, train_Y)
+            predict = clf.predict(test_x)
+            print_criterias(predict, test_y)
+
+        if model_int == 4:
+            clf = RandomForestClassifier(n_estimators=100)
+            clf.fit(train_X, train_Y)
+            predict = clf.predict(test_x)
+            print_criterias(predict, test_y)
 
     if section_int==4:
         exit()

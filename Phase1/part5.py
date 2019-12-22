@@ -170,6 +170,8 @@ def get_related_docId_list_proximity_version(query_tokens_array, idf_query, term
     return related_docId_list
 
 
+
+
 # trie,_ = dictionary.build_dictionary()
 # doc_space, idf_query, term_to_num = vector_space_preprocess(trie)
 #

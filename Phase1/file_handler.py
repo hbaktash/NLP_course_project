@@ -27,6 +27,7 @@ def load_english_file(filename: str = "English.csv"):
                 else:
                     titles_and_text.append((row[1], row[2]))
             line_cnt += 1
+            #print(line_cnt)
     return titles_and_text
 
 

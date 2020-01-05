@@ -157,7 +157,7 @@ class Trie:
 
         trie_list = []
         recrusive(trie_list, self.root, "")
-#       trie_list.sort()
+        #       trie_list.sort()
         return trie_list
 
 
@@ -202,12 +202,12 @@ def build_dictionary(english_or_persian: int = 1, filename: str = "English.csv")
     else:
         titles_and_bodies = file_handler.load_persian_file()
     i = 1
-    print("@@@@@@@@@",len(titles_and_bodies),"@@@@@@@@@@@")
+    print("@@@@@@@@@", len(titles_and_bodies), "@@@@@@@@@@@")
     for doc_pair in titles_and_bodies:
         # print(" doc:", i)
         add_doc_data(doc_pair, i, trie_dict, bigram_data)
         i += 1
-        if i%100==0:
+        if i % 100 == 0:
             print(i)
     return trie_dict, bigram_data
 

@@ -48,24 +48,35 @@ def get_tf_idf(occurence_matrix):
     tf_idf = occurence_matrix*idf
     return tf_idf
 
+def get_idf(occurence_matrix):
+    exist_matrix = np.copy(occurence_matrix)
+    exist_matrix[exist_matrix > 1] = 1
+    idf = exist_matrix.sum(axis=0)
+    idf += 1
+    doc_num = occurence_matrix.shape[0]
+    idf = np.log(doc_num / idf).reshape(1, -1)
+
+    return idf.reshape(1,-1)
+
+
 def KNN(K,tf_idf,label_vector,test_vector):
 
-    scores = tf_idf * (test_vector.reshape(1,-1))
-    scores = scores.sum(axis=1).reshape(-1)
-    neighbors_arg = scores.argsort()[::-1][0:K]
-    neighbors_label = label_vector[neighbors_arg]
-    neighbors_bin = np.bincount(neighbors_label)
-    predict_label = neighbors_bin.argmax().reshape(-1)[0]
-    return predict_label
-
-    # scores = tf_idf - (test_vector.reshape(1, -1))
-    # scores = scores**2
+    # scores = tf_idf * (test_vector.reshape(1,-1))
     # scores = scores.sum(axis=1).reshape(-1)
-    # neighbors_arg = scores.argsort()[0:K]
+    # neighbors_arg = scores.argsort()[::-1][0:K]
     # neighbors_label = label_vector[neighbors_arg]
     # neighbors_bin = np.bincount(neighbors_label)
     # predict_label = neighbors_bin.argmax().reshape(-1)[0]
     # return predict_label
+
+    scores = tf_idf - (test_vector.reshape(1, -1))
+    scores = scores**2
+    scores = scores.sum(axis=1).reshape(-1)
+    neighbors_arg = scores.argsort()[0:K]
+    neighbors_label = label_vector[neighbors_arg]
+    neighbors_bin = np.bincount(neighbors_label)
+    predict_label = neighbors_bin.argmax().reshape(-1)[0]
+    return predict_label
 
 
 def get_related_docId_list_classified(query_tokens_array, idf_query, term_to_num, doc_space, predict, category_query):
@@ -151,3 +162,11 @@ def print_criterias(predict,trueLabel):
     print("f1_avg                  = ",f1_avg)
     print("Precision of each class = ",precision.tolist())
     print("Recall    of each class = ",recall.tolist())
+
+
+def normalized(matrix):
+    a = matrix**2
+    a = a.sum(axis=1)
+    a = a.reshape((-1,1))
+    a = np.sqrt(a)
+    return matrix/a

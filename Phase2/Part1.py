@@ -11,14 +11,19 @@ np.set_printoptions(threshold=np.inf)
 #train_x = get_tf_idf(train_x)
 #test_x = get_tf_idf(test_x)
 
-prepare_np_flg =  input("Welcome To Phase 2 of MIR project. For the first run, it is required to load the dataset as a numpy array and save it. Do you wish to run this preprocessing? Y/N")
-if prepare_np_flg=='Y':
+
+try:
+    train_Y, test_y = get_labels_np()
+    train_X, test_x, big_term_arr = get_data_np()
+except:
+    print("As it is the first time you run the program, please be patient while we preprocess the data into postinglist and then save the occurence matrix numpy array")
     save_data_np()
+    train_Y, test_y = get_labels_np()
+    train_X, test_x, big_term_arr = get_data_np()
+
 
 while(True):
 
-    train_Y, test_y = get_labels_np()
-    train_X, test_x, big_term_arr = get_data_np()
 
     prm = np.arange(train_Y.shape[0])
     np.random.shuffle(prm)
@@ -50,25 +55,38 @@ while(True):
         if model_int==2:
 
             K = int(input("Type the value of K: "))
+            tf_idf = get_tf_idf(train_X)
+            tf_idf = normalized(tf_idf)
+
+            train_tf_idf = tf_idf[train_indx,:]
+            val_tf_idf   = tf_idf[val_indx,:]
             predict = np.zeros_like(val_y)
             for i in range(val_y.shape[0]):
-                predict[i]  = KNN(K,train_x,train_y,val_x[i,:])
+                predict[i]  = KNN(K,train_tf_idf,train_y,val_tf_idf[i,:])
                 print(i)
             print("Accuracy on Validation = ",get_accuracy(predict,val_y))
 
         if model_int==3:
 
-            C = int(input("Type the value of C: "))
+            tf_idf = get_tf_idf(train_X)
+            train_tf_idf = tf_idf[train_indx, :]
+            val_tf_idf = tf_idf[val_indx, :]
+
+            C = float(input("Type the value of C: "))
             clf = SVC(gamma='auto',C=C)
-            clf.fit(train_x, train_y)
-            prediction = clf.predict(val_x)
+            clf.fit(train_tf_idf, train_y)
+            predict = clf.predict(val_tf_idf)
             print("Accuracy on Validation = ",get_accuracy(predict,val_y))
 
         if model_int==4:
 
+            tf_idf = get_tf_idf(train_X)
+            train_tf_idf = tf_idf[train_indx, :]
+            val_tf_idf = tf_idf[val_indx, :]
+
             clf = RandomForestClassifier(n_estimators=100)
-            clf.fit(train_x, train_y)
-            prediction = clf.predict(val_x)
+            clf.fit(train_tf_idf, train_y)
+            predict = clf.predict(val_tf_idf)
             print("Accuracy on Validation = ",get_accuracy(predict,val_y))
 
     if section_int==2:
@@ -146,26 +164,37 @@ while(True):
 
         if model_int == 2:
             tf_idf = get_tf_idf(train_X)
-            K = int(input("Type the value of K: "))
+            tf_idf = normalized(tf_idf)
+            idf =  get_idf(train_X)
+            test_idf = test_x * idf
+            test_idf = normalized(test_idf)
             test_y = test_y
             predict = np.zeros_like(test_y)
             for i in range(predict.shape[0]):
-                predict[i] = KNN(K, tf_idf, train_Y, test_x[i, :])
+                predict[i] = KNN(5, tf_idf, train_Y, test_idf[i, :])
                 print(i)
 
             print_criterias(predict, test_y)
 
         if model_int == 3:
-            C = int(input("Type the value of C: "))
-            clf = SVC(gamma='auto', C=C)
-            clf.fit(train_X, train_Y)
-            predict = clf.predict(test_x)
+            tf_idf = get_tf_idf(train_X)
+            idf = get_idf(train_X)
+            test_idf = test_x * idf
+
+            clf = SVC(gamma='auto', C=1)
+            clf.fit(tf_idf, train_Y)
+            predict = clf.predict(test_idf)
             print_criterias(predict, test_y)
 
         if model_int == 4:
+
+            tf_idf = get_tf_idf(train_X)
+            idf = get_idf(train_X)
+            test_idf = test_x * idf
+
             clf = RandomForestClassifier(n_estimators=100)
-            clf.fit(train_X, train_Y)
-            predict = clf.predict(test_x)
+            clf.fit(tf_idf, train_Y)
+            predict = clf.predict(test_idf)
             print_criterias(predict, test_y)
 
     if section_int==4:

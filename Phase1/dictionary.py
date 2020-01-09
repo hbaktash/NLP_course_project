@@ -208,7 +208,7 @@ def build_dictionary(english_or_persian: int = 1, filename: str = "English.csv")
         add_doc_data(doc_pair, i, trie_dict, bigram_data)
         i += 1
         if i % 100 == 0:
-            print(i)
+            print("reading doc ", i)
     return trie_dict, bigram_data
 
 

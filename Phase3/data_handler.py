@@ -53,3 +53,8 @@ def save_data_np():
 def get_data():
     term_and_posting_list = prepare_data_as_list()
     doc_term_data, term_arr = term_pl_list_to_matrix(term_and_posting_list)
+    print(doc_term_data.shape)
+    print(np.sum(doc_term_data, 0))
+
+
+save_data_np()

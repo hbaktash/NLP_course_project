@@ -5,14 +5,14 @@ import csv
 import pickle
 import xml.etree.ElementTree as ET
 
-PROJECT_PARENT_PATH = ""
+PROJECT_PARENT_PATH = "C:\\Users\\hosse\\Desktop\\MIR\\MIRRepo"
 PERSIAN_FILE_PATH = os.path.join(PROJECT_PARENT_PATH, "Persian.xml")
 
 
-def load_english_file(filename: str = "English.csv"):
+def load_english_file(filename: str = "English.csv"):  # For phase 3
     titles_and_text = []
     path = os.path.join(PROJECT_PARENT_PATH, filename)
-    with open(path) as csv_file:
+    with open(path, encoding='ISO-8859-1') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_cnt = 0
         for row in csv_reader:
@@ -24,10 +24,12 @@ def load_english_file(filename: str = "English.csv"):
                 # print(row[0], row[1])
                 if filename == "English.csv":
                     titles_and_text.append((row[0], row[1]))
+                elif filename == "Data.csv":
+                    titles_and_text.append((" ", row[1]))
                 else:
                     titles_and_text.append((row[1], row[2]))
             line_cnt += 1
-            #print(line_cnt)
+            # print(line_cnt)
     return titles_and_text
 
 

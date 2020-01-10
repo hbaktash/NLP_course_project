@@ -57,4 +57,19 @@ def get_data():
     print(np.sum(doc_term_data, 0))
 
 
+def doc_term_mat_to_tf_idf(occurence_matrix: np.ndarray):  # return a vector for every doc
+    exist_matrix = np.copy(occurence_matrix)
+    exist_matrix[exist_matrix > 1] = 1
+    idf = exist_matrix.sum(axis=0)
+    idf += 1
+    doc_num = occurence_matrix.shape[0]
+    idf = np.log(doc_num / idf).reshape(1, -1)
+    tf_idf = occurence_matrix * idf
+    return tf_idf
+
+
+def doc_term_mat_to_w2vec(doc_term_data: np.ndarray, terms: list):  # return a vector for every doc
+    pass
+
+
 save_data_np()

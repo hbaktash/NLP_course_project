@@ -72,4 +72,4 @@ def doc_term_mat_to_w2vec(doc_term_data: np.ndarray, terms: list):  # return a v
     pass
 
 
-save_data_np()
+# save_data_np()
